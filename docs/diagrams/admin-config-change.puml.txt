@@ -1,0 +1,3 @@
+@startuml
+Admin GUI -> Config: update
+@enduml
