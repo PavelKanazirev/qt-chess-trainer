@@ -3,8 +3,8 @@
 A Qt 6 / QML chess tactics trainer written in C++20. It is a hands-on learning project
 with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admin GUI.
 
-
-Status: Day 1 of 11, skeleton and CI.
+## Set Up
+	sudo apt install -y qt6-base-dev qt6-declarative-dev qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtquick-controls
 
 ## Build
 
