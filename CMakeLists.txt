@@ -10,3 +10,6 @@ qt_standard_project_setup()
 include(cmake/Dependencies.cmake)
 
 enable_testing()
+
+add_subdirectory(src/core)
+add_subdirectory(tests)
