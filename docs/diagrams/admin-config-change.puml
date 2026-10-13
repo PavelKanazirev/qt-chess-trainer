@@ -1,3 +1,29 @@
 @startuml
-"Admin GUI" -> Config: update
+title Admin: change the puzzle selection strategy
+
+actor Admin
+participant "Admin GUI (PySide6)" as GUI
+participant AdminApiServer as API
+participant ConfigService as Cfg
+participant TrainerService as Svc
+participant "IPuzzleSelector" as Sel
+
+Admin -> GUI: set selector = ByRating, Save
+GUI -> API: PUT /config (X-Admin-Token: token)
+API -> API: verify token (else 401)
+API -> Cfg: apply(patch)
+Cfg -> Cfg: validate against schema
+alt invalid
+  Cfg --> API: errors
+  API --> GUI: 400 + messages
+else valid
+  Cfg -> Cfg: persist config.json
+  Cfg -> Svc: onConfigChanged(newConfig)
+  Svc -> Svc: lock mutex
+  Svc -> Sel: create via selector registry
+  Svc --> Cfg: ok
+  Cfg --> API: ok
+  API --> GUI: 200 + effective config
+end
+GUI --> Admin: show updated values
 @enduml
