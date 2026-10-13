@@ -15,5 +15,4 @@ with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admi
 ## Documentation
 
 - docs/ProblemDefinition.md : what we build
-- docs/SolutionPlan.md : how and in which order
 - docs/Architecture.md : diagrams
