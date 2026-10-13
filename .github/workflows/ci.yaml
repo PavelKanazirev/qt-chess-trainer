@@ -1,0 +1,34 @@
+name: CI
+on:
+    push:
+      branches: [main]
+    pull_request:
+    
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build qt6-base-dev qt6-declarative-dev \
+            libgl1-mesa-dev \
+            qml6-module-qtqml qml6-module-qtqml-workerscript qml6-module-qtqml-models \
+            qml6-module-qtquick qml6-module-qtquick-window \
+            qml6-module-qtquick-templates qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
+
+  diagrams:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y plantuml graphviz
+      - run: plantuml -tsvg -o ../rendered docs/diagrams/*.puml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diagrams
+          path: docs/rendered

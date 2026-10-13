@@ -1,4 +1,32 @@
+# Local, machine-specific configuration (real admin token, ports, paths)
+config/config.local.json
+*.local.json
+
+# Secrets and keys
+.env
+.env.*
+*.pem
+*.key
+id_*
+deploy-key*
+
+# Python (admin GUI)
+.venv/
+venv/
+*.pyc
+.pytest_cache/
+
+# Build and tooling output
 build/
+cmake-build-*/
+CMakeUserPresets.json
+compile_commands.json
+docs/rendered/
+
+# Editor, OS and Qt Creator files
 .vscode/
+.idea/
 *.user
-__pycache__/
+*.autosave
+.DS_Store
+Thumbs.db
