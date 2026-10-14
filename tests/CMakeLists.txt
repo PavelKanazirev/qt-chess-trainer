@@ -14,4 +14,3 @@ add_test(NAME smoke
 set_tests_properties(smoke PROPERTIES
   ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
   TIMEOUT 30)
-  
