@@ -22,3 +22,4 @@ with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admi
 
 - docs/ProblemDefinition.md : what we build
 - docs/Architecture.md : diagrams
+- docs/PuzzleFormat.md : puzzle CSV format
