@@ -1,5 +1,14 @@
 #include "PuzzleParser.h"
 
+#include <QRegularExpression>
+
+namespace {
+bool isUciMove(const QString& m) {
+    static const QRegularExpression re(QStringLiteral("^[a-h][1-8][a-h][1-8][qrbn]?$"));
+    return re.match(m).hasMatch();
+}
+} // namespace
+
 namespace PuzzleParser {
 
 std::optional<Puzzle> parseLine(const QString& line) {
@@ -14,6 +23,12 @@ std::optional<Puzzle> parseLine(const QString& line) {
     p.rating = f[3].toInt(&ok);
     if (!ok) return std::nullopt;
     p.themes = f[7].split(QLatin1Char(' '), Qt::SkipEmptyParts);
+
+    if (p.id.isEmpty() || p.rating <= 0) return std::nullopt;
+    if (p.fen.split(QLatin1Char(' ')).size() != 6) return std::nullopt;
+    if (p.moves.size() < 2) return std::nullopt;
+    for (const QString& m : std::as_const(p.moves))
+        if (!isUciMove(m)) return std::nullopt;
     return p;
 }
 
