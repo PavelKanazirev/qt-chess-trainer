@@ -8,6 +8,7 @@ endfunction()
 
 add_trainer_test(tst_version)
 add_trainer_test(tst_puzzleparser)
+add_trainer_test(tst_puzzlerepository)
 
 add_test(NAME smoke
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/smoke/smoke.sh $<TARGET_FILE:trainer_app>)
