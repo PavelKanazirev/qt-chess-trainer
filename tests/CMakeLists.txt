@@ -1,6 +1,14 @@
-add_executable(tst_version unit/tst_version.cpp)
-target_link_libraries(tst_version PRIVATE trainer_core Qt6::Test)
-add_test(NAME tst_version COMMAND tst_version)
+function(add_trainer_test name)
+  add_executable(${name} unit/${name}.cpp)
+  target_link_libraries(${name} PRIVATE trainer_core Qt6::Test)
+  target_compile_definitions(${name} PRIVATE
+      TRAINER_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+  add_test(NAME ${name} COMMAND ${name})
+endfunction()
+
+add_trainer_test(tst_version)
+add_trainer_test(tst_puzzleparser)
+add_trainer_test(tst_puzzlerepository)
 
 add_test(NAME smoke
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/smoke/smoke.sh $<TARGET_FILE:trainer_app>)

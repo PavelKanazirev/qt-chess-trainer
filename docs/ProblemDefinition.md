@@ -6,7 +6,8 @@ database (CC0).
 
 ## Requirements
 
-- R1: load puzzles from CSV (id, FEN, solution moves, rating, themes)
+- R1: load puzzles from CSV (id, FEN, solution moves, rating, themes). 
+Moves[0] is the opponent's move and is played automatically (see PuzzleFormat.md).
 - R2: QML board shows the position and accepts click-click moves
 - R3: a move is validated against the solution line; the opponent reply is auto-played
 - R4: the puzzle selection algorithm is switchable at runtime
