@@ -11,6 +11,7 @@ add_trainer_test(tst_puzzleparser)
 add_trainer_test(tst_puzzlerepository)
 add_trainer_test(tst_chessposition)
 add_trainer_test(tst_movevalidator)
+add_trainer_test(tst_puzzlesession)
 
 add_test(NAME smoke
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/smoke/smoke.sh $<TARGET_FILE:trainer_app>)
