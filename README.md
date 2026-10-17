@@ -13,6 +13,7 @@ with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admi
         qml6-module-qtquick-layouts
 
 ## Build
+    The first CMake configure needs network access for FetchContent
 
     cmake -S . -B build -G Ninja
     cmake --build build
