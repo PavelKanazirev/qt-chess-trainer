@@ -5,8 +5,12 @@ add_library(trainer_core STATIC
     PuzzleRepository.cpp PuzzleRepository.h
     ChessPosition.cpp ChessPosition.h
     MoveValidator.cpp MoveValidator.h
-    PuzzleSession.cpp PuzzleSession.h)
-target_include_directories(trainer_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+    PuzzleSession.cpp PuzzleSession.h
+    selectors/IPuzzleSelector.h
+    selectors/RandomSelector.cpp selectors/RandomSelector.h)
+target_include_directories(trainer_core PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/selectors)
 target_link_libraries(trainer_core
     PUBLIC  Qt6::Core
     PRIVATE chess_header)
