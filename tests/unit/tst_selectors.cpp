@@ -1,5 +1,6 @@
 #include <QtTest>
 #include "RandomSelector.h"
+#include "ByRatingSelector.h"
 
 class TstSelectors : public QObject {
     Q_OBJECT
@@ -7,6 +8,8 @@ private slots:
     void emptyPoolReturnsNull();
     void randomAvoidsRecentPuzzles();
     void randomIsReproducibleWithSeed();
+    void byRatingStaysInWindow();
+    void byRatingFallsBackToClosest();
 };
 
 static Puzzle make(const QString& id, int rating, const QStringList& themes = {}) {
@@ -38,6 +41,29 @@ void TstSelectors::randomIsReproducibleWithSeed() {
     RandomSelector b(42);
     for (int i = 0; i < 10; ++i)
         QCOMPARE(a.select(pool, {})->id, b.select(pool, {})->id);
+}
+
+void TstSelectors::byRatingStaysInWindow() {
+    QList<Puzzle> pool;
+    for (int r = 800; r <= 2400; r += 100) pool.push_back(make(QString::number(r), r));
+    SelectionContext ctx;
+    ctx.playerRating = 1500;
+    ctx.ratingWindow = 200;
+    ByRatingSelector s(3);
+    for (int i = 0; i < 50; ++i) {
+        const Puzzle* p = s.select(pool, ctx);
+        QVERIFY(p);
+        QVERIFY2(std::abs(p->rating - 1500) <= 200, qPrintable(p->id));
+    }
+}
+
+void TstSelectors::byRatingFallsBackToClosest() {
+    const QList<Puzzle> pool{make("easy", 800), make("hard", 2000)};
+    SelectionContext ctx;
+    ctx.playerRating = 1500;
+    ctx.ratingWindow = 100;
+    ByRatingSelector s(3);
+    QCOMPARE(s.select(pool, ctx)->id, QStringLiteral("hard"));   // 500 away vs 700
 }
 
 QTEST_APPLESS_MAIN(TstSelectors)
