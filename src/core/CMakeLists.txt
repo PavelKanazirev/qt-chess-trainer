@@ -8,7 +8,9 @@ add_library(trainer_core STATIC
     PuzzleSession.cpp PuzzleSession.h
     selectors/IPuzzleSelector.h
     selectors/RandomSelector.cpp selectors/RandomSelector.h
-    selectors/ByRatingSelector.cpp selectors/ByRatingSelector.h)
+    selectors/ByRatingSelector.cpp selectors/ByRatingSelector.h
+    selectors/WeakestThemeSelector.cpp selectors/WeakestThemeSelector.h
+    )
 target_include_directories(trainer_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/selectors)

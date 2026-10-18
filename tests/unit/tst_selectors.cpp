@@ -1,6 +1,7 @@
 #include <QtTest>
 #include "RandomSelector.h"
 #include "ByRatingSelector.h"
+#include "WeakestThemeSelector.h"
 
 class TstSelectors : public QObject {
     Q_OBJECT
@@ -10,6 +11,8 @@ private slots:
     void randomIsReproducibleWithSeed();
     void byRatingStaysInWindow();
     void byRatingFallsBackToClosest();
+    void weakestThemeTargetsMostFailedTheme();
+    void weakestThemeUsesFallbackWithoutData();
 };
 
 static Puzzle make(const QString& id, int rating, const QStringList& themes = {}) {
@@ -64,6 +67,23 @@ void TstSelectors::byRatingFallsBackToClosest() {
     ctx.ratingWindow = 100;
     ByRatingSelector s(3);
     QCOMPARE(s.select(pool, ctx)->id, QStringLiteral("hard"));   // 500 away vs 700
+}
+
+void TstSelectors::weakestThemeTargetsMostFailedTheme() {
+    const QList<Puzzle> pool{make("pin1", 1500, {"pin"}),
+                             make("fork1", 1600, {"fork"}),
+                             make("fork2", 2400, {"fork"})};
+    SelectionContext ctx;
+    ctx.playerRating = 1500;
+    ctx.themeFailures = {{QStringLiteral("fork"), 3}, {QStringLiteral("pin"), 1}};
+    WeakestThemeSelector s(std::make_unique<RandomSelector>(1));
+    QCOMPARE(s.select(pool, ctx)->id, QStringLiteral("fork1"));
+}
+
+void TstSelectors::weakestThemeUsesFallbackWithoutData() {
+    const QList<Puzzle> pool{make("only", 1500, {"pin"})};
+    WeakestThemeSelector s(std::make_unique<RandomSelector>(1));
+    QCOMPARE(s.select(pool, SelectionContext{})->id, QStringLiteral("only"));
 }
 
 QTEST_APPLESS_MAIN(TstSelectors)
