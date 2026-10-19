@@ -10,6 +10,7 @@ add_library(trainer_core STATIC
     selectors/RandomSelector.cpp selectors/RandomSelector.h
     selectors/ByRatingSelector.cpp selectors/ByRatingSelector.h
     selectors/WeakestThemeSelector.cpp selectors/WeakestThemeSelector.h
+    selectors/SelectorRegistry.cpp selectors/SelectorRegistry.h
     )
 target_include_directories(trainer_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
