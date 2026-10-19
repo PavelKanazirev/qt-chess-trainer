@@ -15,3 +15,10 @@ The other columns are read but ignored.
 
 `data/puzzles_sample.csv` contains three hand-made mate-in-one puzzles used by the
 tests. It is not part of the Lichess data.
+
+## Data sources
+
+- `data/puzzles_sample.csv`: three hand-made puzzles for unit tests.
+- `data/puzzles_lichess.csv`: 200 puzzles (40 per rating band) from the Lichess
+  puzzle database (https://database.lichess.org/#puzzles), released under CC0.
+  Regenerate with `tools/data/sample_puzzles.py` (usage in the script header).
