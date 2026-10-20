@@ -16,6 +16,7 @@ add_trainer_test(tst_lichessdata)
 add_trainer_test(tst_selectors)
 add_trainer_test(tst_selectorregistry)
 add_trainer_test(tst_statsstore)
+add_trainer_test(tst_trainerservice)
 
 add_test(NAME smoke
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/smoke/smoke.sh $<TARGET_FILE:trainer_app>)
