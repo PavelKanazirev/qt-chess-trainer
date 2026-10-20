@@ -63,7 +63,26 @@ std::optional<PuzzleView> TrainerService::startNext() {
 MoveOutcome TrainerService::submitMove(const QString& sessionId, const QString& uci) {
     MoveOutcome out;
     out.playerRating = m_stats.playerRating();
-    return out;   // implemented in the next commit
+
+    const auto it = m_sessions.find(sessionId);
+    if (it == m_sessions.end()) return out;   // unknown or already finished
+    out.sessionFound = true;
+
+    PuzzleSession& session = it->second;
+    const MoveResult r = session.submit(uci);
+    out.verdict = r.verdict;
+    out.opponentReply = r.opponentReply;
+    out.solved = session.isSolved();
+    out.failed = session.isFailed();
+    out.fen = session.fen();
+
+    if (r.verdict != MoveVerdict::Illegal && session.isFinished()) {
+        m_stats.record(session.puzzle(), session.isSolved());
+        out.playerRating = m_stats.playerRating();
+        m_sessionOrder.removeAll(sessionId);
+        m_sessions.erase(it);   // 'session' is invalid from here on
+    }
+    return out;
 }
 
 StatsSnapshot TrainerService::stats() const {

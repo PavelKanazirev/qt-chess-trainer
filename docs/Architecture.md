@@ -27,6 +27,6 @@ that gives checkmate.
 | WeakestTheme | the theme with most failures, closest rating; delegates to ByRating without data |
 
 `SelectorRegistry` creates a selector from its name. The active name will come
-from `config.json` (Day 9), so the admin can switch strategies at runtime.
+from `config.json` , so the admin can switch strategies at runtime.
 Selectors are pure: all input arrives through `SelectionContext`, and the
 random generator is seeded, which keeps the tests deterministic.
