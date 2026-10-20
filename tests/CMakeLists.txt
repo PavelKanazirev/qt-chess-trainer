@@ -6,6 +6,8 @@ function(add_trainer_test name)
   add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
+find_package(Threads REQUIRED)
+
 add_trainer_test(tst_version)
 add_trainer_test(tst_puzzleparser)
 add_trainer_test(tst_puzzlerepository)
@@ -15,6 +17,12 @@ add_trainer_test(tst_puzzlesession)
 add_trainer_test(tst_lichessdata)
 add_trainer_test(tst_selectors)
 add_trainer_test(tst_selectorregistry)
+add_trainer_test(tst_statsstore)
+add_trainer_test(tst_trainerservice)
+add_trainer_test(tst_trainerconcurrency)
+add_trainer_test(tst_trainerflow)
+
+target_link_libraries(tst_trainerconcurrency PRIVATE Threads::Threads)
 
 add_test(NAME smoke
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/smoke/smoke.sh $<TARGET_FILE:trainer_app>)

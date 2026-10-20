@@ -27,6 +27,25 @@ that gives checkmate.
 | WeakestTheme | the theme with most failures, closest rating; delegates to ByRating without data |
 
 `SelectorRegistry` creates a selector from its name. The active name will come
-from `config.json` (Day 9), so the admin can switch strategies at runtime.
+from `config.json` , so the admin can switch strategies at runtime.
 Selectors are pure: all input arrives through `SelectionContext`, and the
 random generator is seeded, which keeps the tests deterministic.
+
+## Facade: TrainerService
+
+`TrainerService` is the only class the UI and the APIs use. It hides
+`PuzzleRepository`, `SelectorRegistry`, the active `IPuzzleSelector`,
+`StatsStore` and the open `PuzzleSession`s.
+
+| Call | Purpose |
+|---|---|
+| `load()` | read the puzzle file |
+| `startNext()` | pick a puzzle with the active strategy, open a session, return a `PuzzleView` |
+| `submitMove(sessionId, uci)` | validate, auto-reply, record the outcome when finished |
+| `setSelector(name)` / `setRatingWindow(n)` | runtime configuration (admin API, Day 9) |
+| `stats()` / `resetStats()` | player statistics |
+
+Thread safety: every public method takes one internal mutex, because the REST
+servers (Days 8–9) call it from worker threads. It returns value types only, so
+callers never hold references into its state. Rating estimate: Elo with K = 32,
+starting at 1500.

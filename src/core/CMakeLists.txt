@@ -11,6 +11,8 @@ add_library(trainer_core STATIC
     selectors/ByRatingSelector.cpp selectors/ByRatingSelector.h
     selectors/WeakestThemeSelector.cpp selectors/WeakestThemeSelector.h
     selectors/SelectorRegistry.cpp selectors/SelectorRegistry.h
+    StatsStore.cpp StatsStore.h
+    TrainerTypes.h TrainerService.cpp TrainerService.h
     )
 target_include_directories(trainer_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
