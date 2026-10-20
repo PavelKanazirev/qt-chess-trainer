@@ -10,6 +10,7 @@ TrainerService::TrainerService(Options options)
 }
 
 bool TrainerService::load(QString* error) {
+    std::lock_guard lock(m_mutex);
     if (!m_repo.loadFromFile(m_options.dataPath, error)) return false;
     if (m_repo.size() == 0) {
         if (error) *error = QStringLiteral("no valid puzzles in %1").arg(m_options.dataPath);
@@ -18,13 +19,23 @@ bool TrainerService::load(QString* error) {
     return true;
 }
 
-int TrainerService::puzzleCount() const { return m_repo.size(); }
+int TrainerService::puzzleCount() const {
+        std::lock_guard lock(m_mutex);
+        return m_repo.size(); 
+    }
 
-QStringList TrainerService::availableSelectors() const { return m_registry.names(); }
+QStringList TrainerService::availableSelectors() const { 
+    std::lock_guard lock(m_mutex);
+    return m_registry.names(); 
+}
 
-QString TrainerService::selectorName() const { return m_options.selectorName; }
+QString TrainerService::selectorName() const {
+        std::lock_guard lock(m_mutex);
+        return m_options.selectorName; 
+}
 
 bool TrainerService::setSelector(const QString& name) {
+    std::lock_guard lock(m_mutex);
     auto selector = m_registry.create(name, nextSeed());
     if (!selector) return false;
     m_selector = std::move(selector);
@@ -33,10 +44,12 @@ bool TrainerService::setSelector(const QString& name) {
 }
 
 void TrainerService::setRatingWindow(int window) {
+    std::lock_guard lock(m_mutex);    
     m_options.ratingWindow = std::max(0, window);
 }
 
 std::optional<PuzzleView> TrainerService::startNext() {
+    std::lock_guard lock(m_mutex);
     if (!m_selector) return std::nullopt;
     const SelectionContext ctx = m_stats.selectionContext(m_options.ratingWindow);
 
@@ -61,6 +74,7 @@ std::optional<PuzzleView> TrainerService::startNext() {
 }
 
 MoveOutcome TrainerService::submitMove(const QString& sessionId, const QString& uci) {
+    std::lock_guard lock(m_mutex);
     MoveOutcome out;
     out.playerRating = m_stats.playerRating();
 
@@ -86,6 +100,7 @@ MoveOutcome TrainerService::submitMove(const QString& sessionId, const QString& 
 }
 
 StatsSnapshot TrainerService::stats() const {
+    std::lock_guard lock(m_mutex);    
     StatsSnapshot s;
     s.playerRating = m_stats.playerRating();
     s.solved = m_stats.solvedCount();
@@ -95,7 +110,10 @@ StatsSnapshot TrainerService::stats() const {
     return s;
 }
 
-void TrainerService::resetStats() { m_stats.reset(); }
+void TrainerService::resetStats() {
+    std::lock_guard lock(m_mutex);
+    m_stats.reset(); 
+}
 
 void TrainerService::storeSession(const QString& id, PuzzleSession session) {
     m_sessions.emplace(id, std::move(session));

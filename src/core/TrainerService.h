@@ -2,12 +2,14 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <mutex>
 #include <QRandomGenerator>
 #include "PuzzleRepository.h"
 #include "PuzzleSession.h"
 #include "SelectorRegistry.h"
 #include "StatsStore.h"
 #include "TrainerTypes.h"
+
 
 // Facade: the single entry point for QML, the client REST API and the admin API.
 class TrainerService {
@@ -48,4 +50,5 @@ private:
     std::map<QString, PuzzleSession> m_sessions;
     QList<QString> m_sessionOrder;   // oldest first, for the open-session limit
     QRandomGenerator m_rng;
+    mutable std::mutex m_mutex;
 };
