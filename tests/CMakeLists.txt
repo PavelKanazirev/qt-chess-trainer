@@ -20,6 +20,7 @@ add_trainer_test(tst_selectorregistry)
 add_trainer_test(tst_statsstore)
 add_trainer_test(tst_trainerservice)
 add_trainer_test(tst_trainerconcurrency)
+add_trainer_test(tst_trainerflow)
 
 target_link_libraries(tst_trainerconcurrency PRIVATE Threads::Threads)
 
