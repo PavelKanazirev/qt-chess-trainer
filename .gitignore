@@ -18,6 +18,7 @@ venv/
 
 # Build and tooling output
 build/
+build-tsan/
 cmake-build-*/
 CMakeUserPresets.json
 compile_commands.json
