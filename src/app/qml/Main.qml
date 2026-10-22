@@ -22,4 +22,12 @@ Window {
         width: Math.min(parent.width - 300, parent.height - 32)
         model: window.trainer.board
     }
+
+    SidePanel {
+        anchors.left: board.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 16
+        trainer: window.trainer
+    }
 }
