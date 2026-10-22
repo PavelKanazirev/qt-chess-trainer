@@ -29,3 +29,16 @@ add_test(NAME smoke
 set_tests_properties(smoke PROPERTIES
   ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
   TIMEOUT 30)
+
+add_executable(tst_qml qml/tst_qml.cpp)
+target_link_libraries(tst_qml PRIVATE Qt6::QuickTest Qt6::Quick)
+target_compile_definitions(tst_qml PRIVATE
+    QUICK_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
+add_test(NAME tst_qml COMMAND tst_qml)
+set_tests_properties(tst_qml PROPERTIES
+  ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software")
+
+add_trainer_test(tst_boardmodel)
+target_link_libraries(tst_boardmodel PRIVATE trainer_ui)
+add_trainer_test(tst_trainerbridge)
+target_link_libraries(tst_trainerbridge PRIVATE trainer_ui)
