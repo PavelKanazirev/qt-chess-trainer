@@ -49,3 +49,18 @@ Thread safety: every public method takes one internal mutex, because the REST
 servers (Days 8–9) call it from worker threads. It returns value types only, so
 callers never hold references into its state. Rating estimate: Elo with K = 32,
 starting at 1500.
+
+## UI layer
+
+| Part | Role |
+|---|---|
+| `BoardModel` | `QAbstractListModel` with 64 rows in display order; parses FEN, flips the board, highlights the last move |
+| `TrainerBridge` | Adapter between QML and `TrainerService`: properties with change signals, `Q_INVOKABLE` actions, GUI thread only |
+| `Board.qml` / `Square.qml` | 8×8 grid; depends only on the model's roles, so it can be tested with a `ListModel` |
+| `SidePanel.qml` | puzzle info, player statistics, next-puzzle button |
+
+`main.cpp` creates the service and the bridge, then passes the bridge to QML with
+`setInitialProperties` as the required property `trainer`. The C++ types are not
+registered with `QML_ELEMENT` yet (see the Day 11 notes).
+
+![Board](img/board_qml.png)

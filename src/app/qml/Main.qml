@@ -2,14 +2,32 @@ import QtQuick
 import QtQuick.Window
 
 Window {
-    width: 640
-    height: 480
+    id: window
+    required property var trainer
+
+    width: 900
+    height: 620
+    minimumWidth: 640
+    minimumHeight: 420
     visible: true
     title: "Qt Chess Trainer"
+    color: "#302e2b"
 
-    Text {
-        anchors.centerIn: parent
-        text: "Chess Trainer skeleton"
+    Board {
+        id: board
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.margins: 16
+        width: Math.min(parent.width - 300, parent.height - 32)
+        model: window.trainer.board
+    }
+
+    SidePanel {
+        anchors.left: board.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 16
+        trainer: window.trainer
     }
 }
-

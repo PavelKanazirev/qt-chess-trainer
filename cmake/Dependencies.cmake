@@ -4,7 +4,6 @@ include(FetchContent)
 FetchContent_Declare(chess
   GIT_REPOSITORY https://github.com/Disservin/chess-library.git
   GIT_TAG        53e6a841dcda7059a2af363d85f785ef1817304a
-  GIT_SHALLOW    TRUE
   SOURCE_SUBDIR  no-cmake-here)   # we only need the header, skip the repo's own CMake
 FetchContent_MakeAvailable(chess)
 

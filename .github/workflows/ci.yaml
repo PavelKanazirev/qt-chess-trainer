@@ -17,7 +17,8 @@ jobs:
             qml6-module-qtqml qml6-module-qtqml-workerscript qml6-module-qtqml-models \
             qml6-module-qtquick qml6-module-qtquick-window \
             qml6-module-qtquick-templates qml6-module-qtquick-controls \
-            qml6-module-qtquick-layouts
+            qml6-module-qtquick-layouts \
+            qml6-module-qttest
       - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
       - run: cmake --build build
       - run: ctest --test-dir build --output-on-failure

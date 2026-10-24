@@ -10,7 +10,8 @@ with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admi
         qml6-module-qtqml qml6-module-qtqml-workerscript qml6-module-qtqml-models \
         qml6-module-qtquick qml6-module-qtquick-window \
         qml6-module-qtquick-templates qml6-module-qtquick-controls \
-        qml6-module-qtquick-layouts
+        qml6-module-qtquick-layouts \
+        qml6-module-qttest
 
 ## Build
     The first CMake configure needs network access for FetchContent
