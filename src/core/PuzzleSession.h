@@ -7,6 +7,7 @@
 struct MoveResult {
     MoveVerdict verdict = MoveVerdict::Illegal;
     QString opponentReply;   // auto-played reply, empty if none
+    QString fenAfterMove;    // after the player's move, before the opponent's reply
     bool solved = false;
 };
 

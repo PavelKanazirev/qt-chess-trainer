@@ -74,6 +74,9 @@ void TstPuzzleSession::multiMovePuzzleAutoPlaysReplies() {
     QCOMPARE(first.verdict, MoveVerdict::Correct);
     QCOMPARE(first.opponentReply, QStringLiteral("g8f6"));
     QVERIFY(!first.solved);
+    QVERIFY(first.fenAfterMove.contains(QStringLiteral(" b ")));   // black to reply
+    QVERIFY(s.fen().contains(QStringLiteral(" w ")));              // reply played
+    QVERIFY(first.fenAfterMove != s.fen());
 
     const MoveResult second = s.submit(QStringLiteral("h5f7"));
     QCOMPARE(second.verdict, MoveVerdict::Correct);

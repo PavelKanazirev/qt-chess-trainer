@@ -24,6 +24,7 @@ MoveResult PuzzleSession::submit(const QString& uci) {
     }
 
     m_pos.play(uci);
+    result.fenAfterMove = m_pos.fen();
     ++m_next;
     if (m_next >= m_puzzle.moves.size() || m_pos.isCheckmate()) {
         m_solved = true;
