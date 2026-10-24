@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QStringList>
 #include "BoardModel.h"
 #include "TrainerService.h"
 
@@ -16,6 +17,9 @@ class TrainerBridge : public QObject {
     Q_PROPERTY(int failedCount READ failedCount NOTIFY statsChanged)
     Q_PROPERTY(QString selector READ selector NOTIFY statsChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
+    Q_PROPERTY(QString feedback READ feedback NOTIFY statusChanged)
+    Q_PROPERTY(bool finished READ finished NOTIFY statusChanged)
+    Q_PROPERTY(QStringList availableSelectors READ availableSelectors CONSTANT)
 
 public:
     explicit TrainerBridge(TrainerService& service, QObject* parent = nullptr);
@@ -30,8 +34,14 @@ public:
     int failedCount() const { return m_stats.failed; }
     QString selector() const { return m_stats.selector; }
     QString statusText() const { return m_status; }
+    QString feedback() const { return m_feedback; }   // "", correct, illegal, wrong, solved
+    bool finished() const { return m_finished; }
+    QStringList availableSelectors() const { return m_service.availableSelectors(); }
+    void setReplyDelay(int ms) { m_replyDelayMs = ms; }
 
     Q_INVOKABLE void nextPuzzle();
+    Q_INVOKABLE void squareClicked(int row);
+    Q_INVOKABLE bool setSelector(const QString& name);
 
 signals:
     void puzzleChanged();
@@ -39,12 +49,20 @@ signals:
     void statusChanged();
 
 private:
+    void playMove(const QString& uci);
+    void showReply(const QString& fen, const QString& reply);
+    bool isPromotion(int fromRow, int toRow) const;
     void refreshStats();
-    void setStatus(const QString& text);
+    void setFeedback(const QString& kind, const QString& text);
 
     TrainerService& m_service;
     BoardModel* m_board;   // owned through QObject parenting
     PuzzleView m_view;
     StatsSnapshot m_stats;
     QString m_status;
+    QString m_feedback;
+    bool m_finished = false;
+    bool m_waitingForReply = false;
+    int m_replyDelayMs = 400;
+    int m_generation = 0;  // increments per puzzle; stale replies are ignored
 };
