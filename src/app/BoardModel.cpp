@@ -66,6 +66,7 @@ QVariant BoardModel::data(const QModelIndex& index, int role) const {
     case WhitePieceRole: return piece.isUpper();
     case LightRole: return (sq / 8 + sq % 8) % 2 == 1;   // a1 is a dark square
     case HighlightedRole: return sq == m_lastFrom || sq == m_lastTo;
+    case SelectedRole: return sq == m_selected;
     default: return {};
     }
 }
@@ -78,6 +79,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const {
         {WhitePieceRole, "whitePiece"},
         {LightRole, "light"},
         {HighlightedRole, "highlighted"},
+        {SelectedRole, "selected"},
     };
 }
 
@@ -105,6 +107,7 @@ bool BoardModel::setFen(const QString& fen) {
     }
 
     m_pieces = pieces;
+    m_selected = -1;   // a new position never keeps an old selection
     emitAllChanged();
     return true;
 }
@@ -120,6 +123,29 @@ void BoardModel::setFlipped(bool flipped) {
     m_flipped = flipped;
     emitAllChanged();
     emit flippedChanged();
+}
+
+void BoardModel::setSelectedRow(int row) {
+    const int sq = (row >= 0 && row < 64) ? squareIndexForRow(row) : -1;
+    if (sq == m_selected) return;
+    m_selected = sq;
+    emitAllChanged();
+}
+
+int BoardModel::selectedRow() const {
+    if (m_selected < 0) return -1;
+    for (int row = 0; row < 64; ++row)
+        if (squareIndexForRow(row) == m_selected) return row;
+    return -1;
+}
+
+QChar BoardModel::pieceAt(int row) const {
+    return (row >= 0 && row < 64) ? m_pieces[squareIndexForRow(row)] : QChar();
+}
+
+bool BoardModel::isOwnPiece(int row, bool white) const {
+    const QChar p = pieceAt(row);
+    return !p.isNull() && p.isUpper() == white;
 }
 
 void BoardModel::emitAllChanged() {

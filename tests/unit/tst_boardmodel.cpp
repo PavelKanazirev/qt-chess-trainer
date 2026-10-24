@@ -10,6 +10,7 @@ private slots:
     void rejectsMalformedFen();
     void highlightsLastMove();
     void obeysModelContract();
+    void selectionFollowsSquareAndClearsOnNewFen();
 };
 
 static const QString kStart =
@@ -73,6 +74,25 @@ void TstBoardModel::obeysModelContract() {
     QVERIFY(m.setFen(kStart));
     m.setFlipped(true);
     m.setLastMove(QStringLiteral("g1f3"));
+}
+
+void TstBoardModel::selectionFollowsSquareAndClearsOnNewFen() {
+    BoardModel m;
+    QVERIFY(m.setFen(kStart));
+    const int e2 = m.rowForSquare(QStringLiteral("e2"));
+    QVERIFY(m.isOwnPiece(e2, true));
+    QVERIFY(!m.isOwnPiece(e2, false));
+    QVERIFY(!m.isOwnPiece(m.rowForSquare(QStringLiteral("e4")), true));
+
+    m.setSelectedRow(e2);
+    QCOMPARE(m.selectedRow(), e2);
+    QVERIFY(m.data(m.index(e2), BoardModel::SelectedRole).toBool());
+
+    m.setFlipped(true);                                   // selection is a square, not a row
+    QCOMPARE(m.selectedRow(), m.rowForSquare(QStringLiteral("e2")));
+
+    QVERIFY(m.setFen(kStart));
+    QCOMPARE(m.selectedRow(), -1);
 }
 
 QTEST_APPLESS_MAIN(TstBoardModel)
