@@ -15,7 +15,8 @@ Item {
                     glyph: i === 0 ? "\u265C" : "",
                     whitePiece: false,
                     light: (Math.floor(i / 8) + i) % 2 === 0,
-                    highlighted: i === 63
+                    highlighted: i === 63,
+                    selected: i === 9
                 })
             }
         }
@@ -43,7 +44,7 @@ Item {
 
         function test_clickReportsDisplayIndex() {
             clickSpy.clear()
-            mouseClick(board, 30, 30)                      // top-left square
+            mouseClick(board, 30, 30)                                // top-left square
             compare(clickSpy.count, 1)
             compare(clickSpy.signalArguments[0][0], 0)
 
@@ -51,5 +52,13 @@ Item {
             compare(clickSpy.count, 2)
             compare(clickSpy.signalArguments[1][0], 63)
         }
+
+        function test_selectedSquareIsTinted() {
+            const square = findChild(board, "square_9")
+            verify(square !== null)
+            compare(square.selected, true)
+            verify(Qt.colorEqual(square.color, "#7fa650"))
+        }
     }
 }
+
