@@ -23,12 +23,31 @@ Column {
         text: "Themes: " + root.trainer.themes
         color: "#cccccc"
     }
-    Label {
+
+    Rectangle {
         width: root.width
-        wrapMode: Text.WordWrap
-        text: root.trainer.statusText
-        font.pixelSize: 16
-        color: "white"
+        height: statusLabel.implicitHeight + 20
+        radius: 6
+        color: {
+            switch (root.trainer.feedback) {
+            case "solved":  return "#2e7d32"
+            case "correct": return "#558b2f"
+            case "illegal": return "#ef6c00"
+            case "wrong":   return "#c62828"
+            default:        return "#444444"
+            }
+        }
+        Behavior on color { ColorAnimation { duration: 150 } }
+
+        Label {
+            id: statusLabel
+            anchors.fill: parent
+            anchors.margins: 10
+            wrapMode: Text.WordWrap
+            text: root.trainer.statusText
+            font.pixelSize: 16
+            color: "white"
+        }
     }
 
     Rectangle { width: root.width; height: 1; color: "#555555" }
@@ -41,13 +60,17 @@ Column {
         text: "Solved " + root.trainer.solvedCount + " / failed " + root.trainer.failedCount
         color: "#cccccc"
     }
-    Label {
-        text: "Strategy: " + root.trainer.selector
-        color: "#cccccc"
+
+    Label { text: "Strategy"; color: "#cccccc" }
+    ComboBox {
+        width: root.width
+        model: root.trainer.availableSelectors
+        currentIndex: root.trainer.availableSelectors.indexOf(root.trainer.selector)
+        onActivated: (i) => root.trainer.setSelector(textAt(i))
     }
 
     Button {
-        text: "Next puzzle"
+        text: root.trainer.finished ? "Next puzzle (N)" : "Skip puzzle (N)"
         onClicked: root.trainer.nextPuzzle()
     }
 }

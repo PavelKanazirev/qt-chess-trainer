@@ -21,6 +21,7 @@ Window {
         anchors.margins: 16
         width: Math.min(parent.width - 300, parent.height - 32)
         model: window.trainer.board
+        onSquareClicked: (i) => window.trainer.squareClicked(i)
     }
 
     SidePanel {
@@ -29,5 +30,10 @@ Window {
         anchors.top: parent.top
         anchors.margins: 16
         trainer: window.trainer
+    }
+
+    Shortcut {
+        sequence: "N"
+        onActivated: window.trainer.nextPuzzle()
     }
 }

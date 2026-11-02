@@ -89,6 +89,7 @@ MoveOutcome TrainerService::submitMove(const QString& sessionId, const QString& 
     out.solved = session.isSolved();
     out.failed = session.isFailed();
     out.fen = session.fen();
+    out.fenAfterMove = r.fenAfterMove;
 
     if (r.verdict != MoveVerdict::Illegal && session.isFinished()) {
         m_stats.record(session.puzzle(), session.isSolved());

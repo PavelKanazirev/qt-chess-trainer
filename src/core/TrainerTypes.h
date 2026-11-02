@@ -24,6 +24,7 @@ struct MoveOutcome {
     bool solved = false;
     bool failed = false;
     QString fen;
+    QString fenAfterMove;    // after the player's move; 'fen' is after the reply
     int playerRating = 0;
 };
 

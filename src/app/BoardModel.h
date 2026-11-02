@@ -15,6 +15,7 @@ public:
         WhitePieceRole,
         LightRole,
         HighlightedRole,
+        SelectedRole,
     };
 
     explicit BoardModel(QObject* parent = nullptr);
@@ -27,6 +28,11 @@ public:
     void setLastMove(const QString& uci);     // highlights from/to; empty string clears
     bool flipped() const { return m_flipped; }
     void setFlipped(bool flipped);            // true: black at the bottom
+
+    void setSelectedRow(int row);             // -1 clears
+    int selectedRow() const;                  // -1 if nothing is selected
+    QChar pieceAt(int row) const;             // null QChar if empty or out of range
+    bool isOwnPiece(int row, bool white) const;
 
     QString squareAt(int row) const;          // "e4"; empty if row is out of range
     int rowForSquare(const QString& square) const;   // -1 if invalid
@@ -41,5 +47,6 @@ private:
     std::array<QChar, 64> m_pieces{};
     int m_lastFrom = -1;
     int m_lastTo = -1;
+    int m_selected = -1;                      // square index, -1 = none
     bool m_flipped = false;
 };

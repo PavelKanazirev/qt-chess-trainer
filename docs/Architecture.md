@@ -64,3 +64,20 @@ starting at 1500.
 registered with `QML_ELEMENT` yet (see the Day 11 notes).
 
 ![Board](img/board_qml.png)
+
+### Interaction
+
+QML only reports `squareClicked(row)`. `TrainerBridge` keeps the selection rules:
+
+| State | Click on | Result |
+|---|---|---|
+| nothing selected | own piece | select it |
+| nothing selected | anything else | ignored |
+| piece selected | same square | deselect |
+| piece selected | another own piece | select that one |
+| piece selected | any other square | submit `from+to` (auto-queen on promotion) |
+
+After a correct move the board shows `fenAfterMove` at once and the opponent's
+reply after 400 ms. A per-puzzle generation counter drops replies from a puzzle
+the player has already skipped. Feedback states: `correct`, `illegal`, `wrong`,
+`solved`.
