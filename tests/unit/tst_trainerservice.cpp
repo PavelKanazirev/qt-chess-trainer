@@ -13,6 +13,7 @@ private slots:
     void wrongMoveFailsPuzzle();
     void illegalMoveKeepsSessionOpen();
     void unknownSessionIsReported();
+    void notifiesListenerOnChanges();
 };
 
 static TrainerService::Options sampleOptions() {
@@ -111,6 +112,28 @@ void TstTrainerService::unknownSessionIsReported() {
     TrainerService svc(sampleOptions());
     QVERIFY(svc.load());
     QVERIFY(!svc.submitMove(QStringLiteral("nope"), QStringLiteral("e2e4")).sessionFound);
+}
+
+void TstTrainerService::notifiesListenerOnChanges() {
+    TrainerService svc(sampleOptions());
+    QVERIFY(svc.load());
+    int calls = 0;
+    svc.setChangeListener([&calls] { ++calls; });
+
+    QVERIFY(svc.setSelector(QStringLiteral("Random")));
+    QCOMPARE(calls, 1);
+    svc.setRatingWindow(300);
+    QCOMPARE(calls, 2);
+    QCOMPARE(svc.ratingWindow(), 300);
+
+    const auto view = svc.startNext();
+    QVERIFY(view);
+    svc.submitMove(view->sessionId, QStringLiteral("a1a1"));   // illegal: nothing changed
+    QCOMPARE(calls, 2);
+
+    svc.setChangeListener({});
+    svc.resetStats();
+    QCOMPARE(calls, 2);
 }
 
 QTEST_APPLESS_MAIN(TstTrainerService)

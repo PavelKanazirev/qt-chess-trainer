@@ -35,17 +35,38 @@ QString TrainerService::selectorName() const {
 }
 
 bool TrainerService::setSelector(const QString& name) {
-    std::lock_guard lock(m_mutex);
-    auto selector = m_registry.create(name, nextSeed());
-    if (!selector) return false;
-    m_selector = std::move(selector);
-    m_options.selectorName = name;
+    {
+        std::lock_guard lock(m_mutex);
+        auto selector = m_registry.create(name, nextSeed());
+        if (!selector) return false;
+        m_selector = std::move(selector);
+        m_options.selectorName = name;
+    }
+    notifyChanged();
     return true;
 }
 
 void TrainerService::setRatingWindow(int window) {
-    std::lock_guard lock(m_mutex);    
-    m_options.ratingWindow = std::max(0, window);
+    {
+        std::lock_guard lock(m_mutex);
+        m_options.ratingWindow = std::max(0, window);
+    }
+    notifyChanged();
+}
+
+int TrainerService::ratingWindow() const {
+    std::lock_guard lock(m_mutex);
+    return m_options.ratingWindow;
+}
+
+void TrainerService::setChangeListener(ChangeListener listener) {
+    std::lock_guard lock(m_listenerMutex);
+    m_listener = std::move(listener);
+}
+
+void TrainerService::notifyChanged() {
+    std::lock_guard lock(m_listenerMutex);
+    if (m_listener) m_listener();
 }
 
 std::optional<PuzzleView> TrainerService::startNext() {
@@ -74,29 +95,34 @@ std::optional<PuzzleView> TrainerService::startNext() {
 }
 
 MoveOutcome TrainerService::submitMove(const QString& sessionId, const QString& uci) {
-    std::lock_guard lock(m_mutex);
     MoveOutcome out;
-    out.playerRating = m_stats.playerRating();
-
-    const auto it = m_sessions.find(sessionId);
-    if (it == m_sessions.end()) return out;   // unknown or already finished
-    out.sessionFound = true;
-
-    PuzzleSession& session = it->second;
-    const MoveResult r = session.submit(uci);
-    out.verdict = r.verdict;
-    out.opponentReply = r.opponentReply;
-    out.solved = session.isSolved();
-    out.failed = session.isFailed();
-    out.fen = session.fen();
-    out.fenAfterMove = r.fenAfterMove;
-
-    if (r.verdict != MoveVerdict::Illegal && session.isFinished()) {
-        m_stats.record(session.puzzle(), session.isSolved());
+    bool recorded = false;
+    {
+        std::lock_guard lock(m_mutex);
         out.playerRating = m_stats.playerRating();
-        m_sessionOrder.removeAll(sessionId);
-        m_sessions.erase(it);   // 'session' is invalid from here on
+
+        const auto it = m_sessions.find(sessionId);
+        if (it == m_sessions.end()) return out;   // unknown or already finished
+        out.sessionFound = true;
+
+        PuzzleSession& session = it->second;
+        const MoveResult r = session.submit(uci);
+        out.verdict = r.verdict;
+        out.opponentReply = r.opponentReply;
+        out.solved = session.isSolved();
+        out.failed = session.isFailed();
+        out.fen = session.fen();
+        out.fenAfterMove = r.fenAfterMove;
+
+        if (r.verdict != MoveVerdict::Illegal && session.isFinished()) {
+            m_stats.record(session.puzzle(), session.isSolved());
+            out.playerRating = m_stats.playerRating();
+            m_sessionOrder.removeAll(sessionId);
+            m_sessions.erase(it);   // 'session' is invalid from here on
+            recorded = true;
+        }
     }
+    if (recorded) notifyChanged();
     return out;
 }
 
@@ -112,8 +138,11 @@ StatsSnapshot TrainerService::stats() const {
 }
 
 void TrainerService::resetStats() {
-    std::lock_guard lock(m_mutex);
-    m_stats.reset(); 
+    {
+        std::lock_guard lock(m_mutex);
+        m_stats.reset();
+    }
+    notifyChanged();
 }
 
 void TrainerService::storeSession(const QString& id, PuzzleSession session) {
