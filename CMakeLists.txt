@@ -12,5 +12,6 @@ include(cmake/Dependencies.cmake)
 enable_testing()
 
 add_subdirectory(src/core)
+add_subdirectory(src/api)
 add_subdirectory(src/app)
 add_subdirectory(tests)

@@ -10,11 +10,15 @@ FetchContent_MakeAvailable(chess)
 add_library(chess_header INTERFACE)
 target_include_directories(chess_header SYSTEM INTERFACE ${chess_SOURCE_DIR}/include)
 
-# cpp-httplib is fetched on Day 8
-option(TRAINER_FETCH_DEPS "Fetch cpp-httplib" OFF)
-if(TRAINER_FETCH_DEPS)
-  FetchContent_Declare(httplib
-    GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-    GIT_TAG        puzzle-data ) # <pin a release tag at the end>
-  FetchContent_MakeAvailable(httplib)
-endif()
+# cpp-httplib: header-only (MIT). A release tag, so a shallow clone is fine.
+FetchContent_Declare(httplib
+  GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+  GIT_TAG        v0.66.0
+  GIT_SHALLOW    TRUE
+  SOURCE_SUBDIR  no-cmake-here)   # we only need httplib.h, skip the repo's own CMake
+FetchContent_MakeAvailable(httplib)
+
+find_package(Threads REQUIRED)
+add_library(httplib_header INTERFACE)
+target_include_directories(httplib_header SYSTEM INTERFACE ${httplib_SOURCE_DIR})
+target_link_libraries(httplib_header INTERFACE Threads::Threads)
