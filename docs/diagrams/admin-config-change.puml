@@ -6,24 +6,24 @@ participant "Admin GUI (PySide6)" as GUI
 participant AdminApiServer as API
 participant ConfigService as Cfg
 participant TrainerService as Svc
-participant "IPuzzleSelector" as Sel
+participant TrainerBridge as Br
 
-Admin -> GUI: set selector = ByRating, Save
-GUI -> API: PUT /config (X-Admin-Token: token)
-API -> API: verify token (else 401)
+Admin -> GUI: set selector = Random, Save
+GUI -> API: PUT /config (X-Admin-Token)
+API -> API: pre-routing token check (else 401)
 API -> Cfg: apply(patch)
-Cfg -> Cfg: validate against schema
+Cfg -> Cfg: validate (known selector, ranges, ports differ)
 alt invalid
   Cfg --> API: errors
-  API --> GUI: 400 + messages
+  API --> GUI: 400 + errors
 else valid
-  Cfg -> Cfg: persist config.json
-  Cfg -> Svc: onConfigChanged(newConfig)
-  Svc -> Svc: lock mutex
-  Svc -> Sel: create via selector registry
-  Svc --> Cfg: ok
-  Cfg --> API: ok
-  API --> GUI: 200 + effective config
+  Cfg -> Cfg: write config.json (QSaveFile)
+  Cfg -> Svc: listener: setSelector, setRatingWindow
+  Svc -> Svc: create selector via SelectorRegistry (under mutex)
+  Svc -> Br: change listener (queued to the GUI thread)
+  Cfg --> API: ConfigResult (restartRequired)
+  API --> GUI: 200 + config
 end
+Br -> Br: refreshStats; QML shows the new strategy
 GUI --> Admin: show updated values
 @enduml

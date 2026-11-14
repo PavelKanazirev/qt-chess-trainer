@@ -32,3 +32,28 @@ An illegal or wrong chess move is a valid request: the answer is `200` with
 
 cpp-httplib runs handlers on its own worker threads. They only call
 `TrainerService`, whose public methods are serialized by one mutex (Day 5).
+
+# Admin REST API
+
+Started on `http://127.0.0.1:8081` (`adminApiPort` in the config, or `--admin-port`).
+Localhost only. Every request needs the header `X-Admin-Token`; without it, or with a
+wrong token, the answer is `401`. `GET` shows the token as `***`.
+
+| Method | Path | Body | Success | Errors |
+|---|---|---|---|---|
+| GET | `/config` | | `200` `{config, defaults, selectors, restartRequired}` | |
+| PUT | `/config` | partial object, e.g. `{"selector":"Random"}` | `200` same as GET | `400` `{errors}` |
+| POST | `/config/reset` | empty (all keys) or `{"keys":["selector"]}` | `200` same as GET | `400` `{errors}` |
+
+| Key | Valid values | Applied |
+|---|---|---|
+| `selector` | `ByRating`, `Random`, `WeakestTheme` | immediately |
+| `ratingWindow` | 50–1000 | immediately |
+| `adminToken` | at least 8 characters | immediately |
+| `clientApiPort`, `adminApiPort` | 1024–65535, different | after restart |
+| `dataPath` | path, relative to the config file; empty = built-in sample | after restart |
+
+    curl -s -H 'X-Admin-Token: change-me' http://127.0.0.1:8081/config
+    curl -s -X PUT -H 'X-Admin-Token: change-me' -H 'Content-Type: application/json' \
+         -d '{"selector":"WeakestTheme","ratingWindow":300}' http://127.0.0.1:8081/config
+    curl -s -X POST -H 'X-Admin-Token: change-me' http://127.0.0.1:8081/config/reset
