@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,6 +15,7 @@
 // Facade: the single entry point for QML, the client REST API and the admin API.
 class TrainerService {
 public:
+    using ChangeListener = std::function<void()>;
     struct Options {
         QString dataPath;
         QString selectorName = QStringLiteral("ByRating");
@@ -31,6 +33,10 @@ public:
     QString selectorName() const;
     bool setSelector(const QString& name);   // false if the name is unknown
     void setRatingWindow(int window);
+    // Called after statistics or settings change, on the thread that made the change.
+    // It must not call back into TrainerService synchronously.
+    void setChangeListener(ChangeListener listener);
+    int ratingWindow() const;
 
     std::optional<PuzzleView> startNext();
     MoveOutcome submitMove(const QString& sessionId, const QString& uci);
@@ -41,6 +47,7 @@ public:
 private:
     quint32 nextSeed() { return m_rng.generate(); }
     void storeSession(const QString& id, PuzzleSession session);
+    void notifyChanged();
 
     Options m_options;
     PuzzleRepository m_repo;
@@ -51,4 +58,6 @@ private:
     QList<QString> m_sessionOrder;   // oldest first, for the open-session limit
     QRandomGenerator m_rng;
     mutable std::mutex m_mutex;
+    std::mutex m_listenerMutex;   // also lets setChangeListener({}) wait for a running call
+    ChangeListener m_listener;
 };

@@ -13,6 +13,12 @@ with a REST API (cpp-httplib), a separate localhost admin API and a PySide6 admi
         qml6-module-qtquick-layouts \
         qml6-module-qttest
 
+## Configuration
+
+The app reads `config/config.local.json` (ignored by git; created on the first change, see
+`config/config.default.json` for the keys). Use `--config <file>` for another file. Change the
+admin token before using the admin API on a shared machine.
+
 ## Build
     The first CMake configure needs network access for FetchContent
 

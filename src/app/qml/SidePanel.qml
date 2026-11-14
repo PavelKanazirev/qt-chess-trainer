@@ -63,10 +63,19 @@ Column {
 
     Label { text: "Strategy"; color: "#cccccc" }
     ComboBox {
+        id: strategyBox
         width: root.width
         model: root.trainer.availableSelectors
         currentIndex: root.trainer.availableSelectors.indexOf(root.trainer.selector)
         onActivated: (i) => root.trainer.setSelector(textAt(i))
+
+        Connections {
+            target: root.trainer
+            function onStatsChanged() {
+                strategyBox.currentIndex =
+                    root.trainer.availableSelectors.indexOf(root.trainer.selector)
+            }
+        }
     }
 
     Button {

@@ -11,4 +11,6 @@ qt_add_qml_module(trainer_app
     VERSION 1.0
     QML_FILES qml/Main.qml qml/Board.qml qml/Square.qml qml/SidePanel.qml)
 target_link_libraries(trainer_app PRIVATE trainer_ui trainer_api Qt6::Quick Qt6::Gui)
-target_compile_definitions(trainer_app PRIVATE TRAINER_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+target_compile_definitions(trainer_app PRIVATE
+    TRAINER_DATA_DIR="${PROJECT_SOURCE_DIR}/data"
+    TRAINER_CONFIG_DIR="${PROJECT_SOURCE_DIR}/config")

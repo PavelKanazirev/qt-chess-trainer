@@ -4,7 +4,16 @@
 
 TrainerBridge::TrainerBridge(TrainerService& service, QObject* parent)
     : QObject(parent), m_service(service), m_board(new BoardModel(this)) {
+    // Called on whichever thread changed the service (REST workers, admin API).
+    // Queue the refresh to the GUI thread before touching any QObject state.
+    m_service.setChangeListener([this] {
+        QMetaObject::invokeMethod(this, &TrainerBridge::refreshStats, Qt::QueuedConnection);
+    });
     refreshStats();
+}
+
+TrainerBridge::~TrainerBridge() {
+    m_service.setChangeListener({});   // also waits for a notification already running
 }
 
 void TrainerBridge::nextPuzzle() {

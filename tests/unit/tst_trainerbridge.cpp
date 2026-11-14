@@ -9,6 +9,8 @@ private slots:
     void selectionRules();
     void clickingTheSolutionSolvesThePuzzle();
     void switchesSelector();
+    void followsChangesMadeOutsideTheBridge();
+    void destroyedBridgeIsNotNotified();
 };
 
 static TrainerService::Options lichessOptions(quint32 seed) {
@@ -114,5 +116,22 @@ void TstTrainerBridge::switchesSelector() {
     QCOMPARE(bridge.availableSelectors().size(), 3);
 }
 
-QTEST_APPLESS_MAIN(TstTrainerBridge)
+void TstTrainerBridge::followsChangesMadeOutsideTheBridge() {
+    TrainerService service(lichessOptions(2));
+    QVERIFY(service.load());
+    TrainerBridge bridge(service);
+    QCOMPARE(bridge.selector(), QStringLiteral("ByRating"));
+
+    QVERIFY(service.setSelector(QStringLiteral("WeakestTheme")));   // as the admin API would
+    QCOMPARE(bridge.selector(), QStringLiteral("ByRating"));         // queued, not delivered yet
+    QTRY_COMPARE(bridge.selector(), QStringLiteral("WeakestTheme")); // runs the event loop
+}
+
+void TstTrainerBridge::destroyedBridgeIsNotNotified() {
+    TrainerService service(lichessOptions(2));
+    { TrainerBridge bridge(service); }
+    QVERIFY(service.setSelector(QStringLiteral("Random")));   // must not touch the old bridge
+}
+
+QTEST_GUILESS_MAIN(TstTrainerBridge)
 #include "tst_trainerbridge.moc"
