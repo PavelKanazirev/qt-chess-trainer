@@ -1,0 +1,8 @@
+{
+    "selector": "ByRating",
+    "ratingWindow": 200,
+    "clientApiPort": 8080,
+    "adminApiPort": 8081,
+    "adminToken": "change-me",
+    "dataPath": ""
+}

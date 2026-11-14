@@ -2,7 +2,8 @@ function(add_trainer_test name)
   add_executable(${name} unit/${name}.cpp)
   target_link_libraries(${name} PRIVATE trainer_core Qt6::Test)
   target_compile_definitions(${name} PRIVATE
-      TRAINER_DATA_DIR="${PROJECT_SOURCE_DIR}/data")
+      TRAINER_DATA_DIR="${PROJECT_SOURCE_DIR}/data"
+      TRAINER_CONFIG_DIR="${PROJECT_SOURCE_DIR}/config")
   add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
@@ -23,6 +24,7 @@ add_trainer_test(tst_trainerconcurrency)
 add_trainer_test(tst_trainerflow)
 add_trainer_test(tst_apijson)
 add_trainer_test(tst_clientapi)
+add_trainer_test(tst_configservice)
 
 target_link_libraries(tst_apijson PRIVATE trainer_api)
 target_link_libraries(tst_clientapi PRIVATE trainer_api httplib_header)
