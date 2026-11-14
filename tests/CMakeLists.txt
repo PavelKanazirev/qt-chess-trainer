@@ -25,9 +25,11 @@ add_trainer_test(tst_trainerflow)
 add_trainer_test(tst_apijson)
 add_trainer_test(tst_clientapi)
 add_trainer_test(tst_configservice)
+add_trainer_test(tst_adminapi)
 
 target_link_libraries(tst_apijson PRIVATE trainer_api)
 target_link_libraries(tst_clientapi PRIVATE trainer_api httplib_header)
+target_link_libraries(tst_adminapi PRIVATE trainer_api httplib_header)
 target_link_libraries(tst_trainerconcurrency PRIVATE Threads::Threads)
 
 add_test(NAME smoke
