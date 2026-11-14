@@ -23,6 +23,7 @@ class TrainerBridge : public QObject {
 
 public:
     explicit TrainerBridge(TrainerService& service, QObject* parent = nullptr);
+    ~TrainerBridge() override;
 
     BoardModel* board() const { return m_board; }
     QString puzzleId() const { return m_view.puzzleId; }
