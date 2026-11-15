@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include "Puzzle.h"
 
-// Input for a selection decision. Filled by StatsStore from Day 5 on.
+// Input for a selection decision. Filled by StatsStore.
 struct SelectionContext {
     int playerRating = 1500;
     int ratingWindow = 200;
