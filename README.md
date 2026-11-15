@@ -66,6 +66,10 @@ Pull requests each with couple commits and green CI: skeleton,
 puzzle data, move validation, strategies, facade, QML board, interaction, client API,
 configuration and admin API, admin GUI, documentation.
 
+## ToDo:
+
+Repository “About” box (gear icon on the repo page): add a one-line description and topics such as qt6, qml, cpp20, rest-api, pyside6, design-patterns, github-actions. This makes the repo much easier to find and read at a glance.
+
 ## Credits and licences
 
 - Code: MIT (see [LICENSE](LICENSE))
