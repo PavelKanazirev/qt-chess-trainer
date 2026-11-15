@@ -10,24 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build qt6-base-dev qt6-declarative-dev \
-            libgl1-mesa-dev \
-            qml6-module-qtqml qml6-module-qtqml-workerscript qml6-module-qtqml-models \
-            qml6-module-qtquick qml6-module-qtquick-window \
-            qml6-module-qtquick-templates qml6-module-qtquick-controls \
-            qml6-module-qtquick-layouts \
-            qml6-module-qttest
-      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-      - run: cmake --build build
-      - run: ctest --test-dir build --output-on-failure
+        run: ./scripts/install-deps.sh
 
   diagrams:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y plantuml graphviz
+      - run: ./scripts/install-deps.sh --docs
+      - name: Check local links in the documentation
+        run: python3 scripts/check-doc-links.py
       - run: plantuml -tsvg -o ../rendered docs/diagrams/*.puml
       - uses: actions/upload-artifact@v4
         with:

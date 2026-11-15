@@ -1,5 +1,20 @@
 # Architecture
 
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Components and patterns | [diagrams/component-overview.puml](diagrams/component-overview.puml) |
+| Client: submit a move | [diagrams/client-submit-move.puml](diagrams/client-submit-move.puml) |
+| Admin: change the strategy | [diagrams/admin-config-change.puml](diagrams/admin-config-change.puml) |
+
+CI renders all three to SVG (the "diagrams" artifact of every run), and release v1.0.0 has
+them attached.
+
+The client diagram shows why `TrainerService` is a Facade: the QML board and the REST API
+are two different front ends, but both reach the same `submitMove`, under one mutex, and
+neither knows about `PuzzleSession`, `MoveValidator` or `StatsStore`.
+
 ## Admin: change the selection strategy
 
 Source: diagrams/admin-config-change.puml (CI renders it to SVG and uploads it as the
@@ -42,11 +57,11 @@ random generator is seeded, which keeps the tests deterministic.
 | `load()` | read the puzzle file |
 | `startNext()` | pick a puzzle with the active strategy, open a session, return a `PuzzleView` |
 | `submitMove(sessionId, uci)` | validate, auto-reply, record the outcome when finished |
-| `setSelector(name)` / `setRatingWindow(n)` | runtime configuration (admin API, Day 9) |
+| `setSelector(name)` / `setRatingWindow(n)` | runtime configuration (admin API) |
 | `stats()` / `resetStats()` | player statistics |
 
 Thread safety: every public method takes one internal mutex, because the REST
-servers (Days 8–9) call it from worker threads. It returns value types only, so
+servers call it from worker threads. It returns value types only, so
 callers never hold references into its state. Rating estimate: Elo with K = 32,
 starting at 1500.
 
@@ -61,7 +76,7 @@ starting at 1500.
 
 `main.cpp` creates the service and the bridge, then passes the bridge to QML with
 `setInitialProperties` as the required property `trainer`. The C++ types are not
-registered with `QML_ELEMENT` yet (see the Day 11 notes).
+registered with `QML_ELEMENT` yet (see the notes).
 
 ![Board](img/board_qml.png)
 

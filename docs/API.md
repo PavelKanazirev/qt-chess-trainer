@@ -31,7 +31,7 @@ An illegal or wrong chess move is a valid request: the answer is `200` with
 ## Threading
 
 cpp-httplib runs handlers on its own worker threads. They only call
-`TrainerService`, whose public methods are serialized by one mutex (Day 5).
+`TrainerService`, whose public methods are serialized by one mutex.
 
 # Admin REST API
 
