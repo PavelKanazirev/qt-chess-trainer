@@ -31,4 +31,5 @@ admin token before using the admin API on a shared machine.
 - docs/ProblemDefinition.md : what we build
 - docs/Architecture.md : diagrams
 - docs/PuzzleFormat.md : puzzle CSV format
-- docs/API.md : client REST API to the README’s documentation list, and set the status to Status: Day 8 of 11, client REST API
+- docs/API.md : client REST API to the README’s documentation list client REST API
+- docs/AdminGui.md : PySide6 admin GUI

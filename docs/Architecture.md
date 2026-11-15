@@ -81,3 +81,11 @@ After a correct move the board shows `fenAfterMove` at once and the opponent's
 reply after 400 ms. A per-puzzle generation counter drops replies from a puzzle
 the player has already skipped. Feedback states: `correct`, `illegal`, `wrong`,
 `solved`.
+
+## Admin GUI (Python, PySide6)
+
+`tools/admin_gui` is a separate client of the admin API, not part of the C++ build. The HTTP
+client uses only the Python standard library, so the end-to-end check (`admin_e2e` in ctest)
+runs in the normal C++ CI job without PySide6. The window receives a client factory
+(dependency injection), which lets the pytest suite run the real widgets offscreen against a
+fake client. See AdminGui.md.
