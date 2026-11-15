@@ -1,0 +1,60 @@
+@startuml
+title Qt Chess Trainer: components and patterns
+
+actor Player
+actor Admin
+actor "REST client" as Http
+
+package "trainer_app (Qt Quick)" {
+  [QML: Main, Board, Square, SidePanel] as Qml
+}
+package "trainer_ui" {
+  [TrainerBridge] as Bridge
+  [BoardModel] as Model
+}
+package "trainer_api (cpp-httplib)" {
+  [ClientApiServer port 8080] as ClientApi
+  [AdminApiServer port 8081] as AdminApi
+}
+package "trainer_core" {
+  [TrainerService] as Svc
+  [SelectorRegistry] as Registry
+  [IPuzzleSelector strategies] as Selectors
+  [PuzzleRepository] as Repo
+  [PuzzleSession] as Session
+  [StatsStore] as Stats
+  [ConfigService] as Config
+  [ChessPosition] as Chess
+}
+package "tools/admin_gui (PySide6)" {
+  [AdminWindow] as AdminGui
+}
+database "puzzles_lichess.csv" as Csv
+database "config.local.json" as Json
+[chess-library] as ChessLib
+
+Player --> Qml
+Qml --> Bridge
+Bridge --> Model
+Bridge --> Svc
+Http --> ClientApi : HTTP
+ClientApi --> Svc
+Admin --> AdminGui
+AdminGui --> AdminApi : HTTP with X-Admin-Token
+AdminApi --> Config
+Config ..> Svc : observer, selector and rating window
+Svc ..> Bridge : observer, queued to the GUI thread
+Svc --> Registry
+Registry --> Selectors
+Svc --> Repo
+Svc --> Session
+Svc --> Stats
+Session --> Chess
+Chess --> ChessLib
+Repo --> Csv
+Config --> Json
+
+note right of Svc : Facade
+note right of Selectors : Strategy
+note right of Chess : Adapter
+@enduml
