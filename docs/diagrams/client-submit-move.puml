@@ -1,0 +1,43 @@
+@startuml
+title Client: submit a move (GUI and REST share the facade)
+
+actor Player
+participant "Board.qml" as QML
+participant TrainerBridge as Br
+participant BoardModel as BM
+actor "REST client" as Http
+participant ClientApiServer as Rest
+participant TrainerService as Svc
+participant PuzzleSession as Ses
+participant MoveValidator as Val
+participant StatsStore as Stats
+
+== GUI path ==
+Player -> QML: click own piece, then target square
+QML -> Br: squareClicked(row), twice
+Br -> BM: setSelectedRow, squareAt
+Br -> Svc: submitMove(sessionId, "e2e4")
+
+== REST path ==
+Http -> Rest: POST /sessions/{id}/moves, body move = e2e4
+Rest -> Rest: ApiJson::moveFromBody (else 400)
+Rest -> Svc: submitMove(sessionId, "e2e4")
+
+== Common core, under the TrainerService mutex ==
+Svc -> Ses: submit(uci)
+Ses -> Val: check(position, uci, expected)
+Val --> Ses: Correct, Wrong or Illegal
+Ses -> Ses: play the move, auto-play the opponent reply
+Ses --> Svc: MoveResult (fenAfterMove, opponentReply)
+alt solved or failed
+  Svc -> Stats: record(puzzle, solved)
+  Svc -> Svc: close the session
+end
+note over Svc: after the mutex is released, the change listener queues refreshStats to the GUI thread
+Svc --> Rest: MoveOutcome
+Rest --> Http: 200 with verdict JSON (404 if the session is unknown)
+Svc --> Br: MoveOutcome
+Br -> BM: setFen(fenAfterMove), setLastMove
+Br -> BM: after 400 ms, setFen(fen) with the opponent reply
+Br --> QML: feedback banner and statistics
+@enduml
