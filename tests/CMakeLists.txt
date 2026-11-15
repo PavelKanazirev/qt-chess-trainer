@@ -50,3 +50,13 @@ add_trainer_test(tst_boardmodel)
 target_link_libraries(tst_boardmodel PRIVATE trainer_ui)
 add_trainer_test(tst_trainerbridge)
 target_link_libraries(tst_trainerbridge PRIVATE trainer_ui)
+
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_Interpreter_FOUND)
+  add_test(NAME admin_e2e
+    COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/admin_gui/e2e_check.py
+            $<TARGET_FILE:trainer_app>)
+  set_tests_properties(admin_e2e PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    TIMEOUT 60)
+endif()
